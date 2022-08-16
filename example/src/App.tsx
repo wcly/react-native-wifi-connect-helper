@@ -1,18 +1,102 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 
-import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-wifi-connect-helper';
+import {
+  StyleSheet,
+  View,
+  Button,
+  Text,
+  Linking,
+  ScrollView,
+  TextInput,
+} from 'react-native';
+import {
+  goGPS,
+  goWifi,
+  getCurrentWifiSSID,
+  checkIsWifiEnable,
+  checkIsGPSEnable,
+  loadWifiList,
+  connectToProtectedSSID,
+} from 'react-native-wifi-connect-helper';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-
-  React.useEffect(() => {
-    multiply(3, 7).then(setResult);
-  }, []);
+  const [wifiName, setWifiName] = useState('');
+  const [isGPSEnabled, setIsGPSEnabled] = useState(false);
+  const [isWfiEnabled, setIsWfiEnabled] = useState(false);
+  const [wifiList, setWifiList] = useState<any[]>([]);
+  const [password, setPassword] = useState('');
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Button title="去gps页面" onPress={() => goGPS()} />
+
+      <Button title="去wifi页面" onPress={() => goWifi()} />
+
+      <Button title="去设置页面" onPress={() => Linking.openSettings()} />
+
+      <Button
+        title="检查GPS是否开启"
+        onPress={async () => {
+          const bool = await checkIsGPSEnable();
+          setIsGPSEnabled(bool);
+        }}
+      />
+      <Text>gps开启：{isGPSEnabled.toString()}</Text>
+
+      <Button
+        title="检查wifi是否开启"
+        onPress={async () => {
+          const bool = await checkIsWifiEnable();
+          setIsWfiEnabled(bool);
+        }}
+      />
+      <Text>wif开启：{isWfiEnabled.toString()}</Text>
+
+      <Button
+        title="获取当前连接的wifi"
+        onPress={async () => {
+          const ssid = await getCurrentWifiSSID();
+          setWifiName(ssid);
+        }}
+      />
+      <Text>wifi名称：{wifiName}</Text>
+
+      <Button
+        title="获取wifi列表"
+        onPress={async () => {
+          const result = await loadWifiList();
+          setWifiList(result);
+        }}
+      />
+      <ScrollView>
+        {wifiList.map((item) => (
+          <Text key={item.BSSID}>
+            {item.SSID} / {item.BSSID}
+          </Text>
+        ))}
+      </ScrollView>
+
+      <Text>连接wifi</Text>
+      <TextInput
+        value={wifiName}
+        placeholder="请输入wifi名称"
+        onChangeText={(text) => setWifiName(text)}
+      />
+      <TextInput
+        placeholder="请输入wifi密码"
+        onChangeText={(text) => setPassword(text)}
+      />
+      <Button
+        onPress={async () => {
+          try {
+            const res = await connectToProtectedSSID(wifiName, password);
+            console.log(res);
+          } catch (err) {
+            console.log(err);
+          }
+        }}
+        title="开始连接"
+      />
     </View>
   );
 }
