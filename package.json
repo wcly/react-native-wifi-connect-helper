@@ -37,12 +37,12 @@
     "android"
   ],
   "repository": "https://www.utcook.com",
-  "author": "魏小林 <weixiaolin@zhut.cn> (https://www.utcook.com)",
+  "author": "魏小林 <weixiaolin@zhut.cn> (https://github.com/wcly)",
   "license": "MIT",
   "bugs": {
-    "url": "https://www.utcook.com/issues"
+    "url": "https://github.com/wcly/react-native-wifi-connect-helper/issues"
   },
-  "homepage": "https://www.utcook.com#readme",
+  "homepage": "https://github.com/wcly/react-native-wifi-connect-helper#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

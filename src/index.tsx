@@ -131,39 +131,39 @@ export enum CONNECT_ERRORS {
  * @param action
  * @returns
  */
-export const go = (action: string) => WifiConnectHelper.go(action);
+export const go = (action: string) => WifiConnectHelper?.go(action);
 
 /**
  * 跳转到gps设置页面
  * @returns
  */
-export const goGPS = () => WifiConnectHelper.goGPS();
+export const goGPS = () => WifiConnectHelper.goGPS?.();
 
 /**
  * 跳转到wifi设置页面
  * @returns
  */
-export const goWifi = () => WifiConnectHelper.goWifi();
+export const goWifi = () => WifiConnectHelper.goWifi?.();
 
 /**
  * 检查wifi是否开启
  * @returns
  */
 export const checkIsWifiEnable = (): Promise<boolean> =>
-  WifiConnectHelper.checkIsWifiEnable();
+  WifiConnectHelper.checkIsWifiEnable?.();
 
 /**
  * 检查GPS是否开启
  * @returns
  */
 export const checkIsGPSEnable = (): Promise<boolean> =>
-  WifiConnectHelper.checkIsGPSEnable();
+  WifiConnectHelper.checkIsGPSEnable?.();
 
 /**
  * 返回当前连接的wifi名称
  */
 export const getCurrentWifiSSID = (): Promise<string> =>
-  WifiConnectHelper.getCurrentWifiSSID();
+  WifiConnectHelper?.getCurrentWifiSSID?.();
 
 /**
  * 设置wifi开关状态
@@ -171,14 +171,14 @@ export const getCurrentWifiSSID = (): Promise<string> =>
  * @returns
  */
 export const setEnabled = (enabled: boolean): void =>
-  WifiConnectHelper.setEnabled(enabled);
+  WifiConnectHelper.setEnabled?.(enabled);
 
 /**
  * 获取当前连接wifi的信号强度
  * @returns
  */
 export const getCurrentSignalStrength = (): Promise<number> =>
-  WifiConnectHelper.getCurrentSignalStrength();
+  WifiConnectHelper.getCurrentSignalStrength?.();
 
 export interface WifiEntry {
   SSID: string;
@@ -189,7 +189,7 @@ export interface WifiEntry {
   timestamp: number;
 }
 export const loadWifiList = (): Promise<WifiEntry[]> =>
-  WifiConnectHelper.loadWifiList();
+  WifiConnectHelper.loadWifiList?.();
 
 /**
  * 连接到指定wifi
@@ -203,4 +203,4 @@ export const connectToProtectedSSID = (
   password: string | null,
   isWEP?: boolean
 ): Promise<void> =>
-  WifiConnectHelper.connectToProtectedSSID(SSID, password, isWEP);
+  WifiConnectHelper.connectToProtectedSSID?.(SSID, password, isWEP);

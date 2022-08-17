@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 
 import {
   StyleSheet,
-  View,
   Button,
   Text,
   Linking,
   ScrollView,
   TextInput,
+  SafeAreaView,
 } from 'react-native';
 import {
   goGPS,
@@ -27,7 +27,7 @@ export default function App() {
   const [password, setPassword] = useState('');
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Button title="去gps页面" onPress={() => goGPS()} />
 
       <Button title="去wifi页面" onPress={() => goWifi()} />
@@ -41,7 +41,7 @@ export default function App() {
           setIsGPSEnabled(bool);
         }}
       />
-      <Text>gps开启：{isGPSEnabled.toString()}</Text>
+      <Text>gps开启：{isGPSEnabled?.toString()}</Text>
 
       <Button
         title="检查wifi是否开启"
@@ -50,7 +50,7 @@ export default function App() {
           setIsWfiEnabled(bool);
         }}
       />
-      <Text>wif开启：{isWfiEnabled.toString()}</Text>
+      <Text>wif开启：{isWfiEnabled?.toString()}</Text>
 
       <Button
         title="获取当前连接的wifi"
@@ -69,7 +69,7 @@ export default function App() {
         }}
       />
       <ScrollView>
-        {wifiList.map((item) => (
+        {wifiList?.map((item) => (
           <Text key={item.BSSID}>
             {item.SSID} / {item.BSSID}
           </Text>
@@ -97,7 +97,7 @@ export default function App() {
         }}
         title="开始连接"
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
