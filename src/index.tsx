@@ -201,6 +201,35 @@ export const loadWifiList = (): Promise<WifiEntry[]> =>
 export const connectToProtectedSSID = (
   SSID: string,
   password: string | null,
-  isWEP?: boolean
+  isWEP: boolean = false
 ): Promise<void> =>
   WifiConnectHelper.connectToProtectedSSID?.(SSID, password, isWEP);
+
+/**
+ * 连接到指定wifi
+ *
+ * @param SSID Wifi 名称.
+ */
+export const connectToSSID = (SSID: string): Promise<void> =>
+  WifiConnectHelper.connectToSSID?.(SSID);
+
+/**
+ * 连接到指定wifi
+ * @param SSID
+ * @param password
+ * @param isWEP
+ * @param joinOnce
+ * @returns
+ */
+export const connectToProtectedSSIDOnce = (
+  SSID: string,
+  password: string,
+  isWEP: boolean,
+  joinOnce: boolean
+): Promise<void> =>
+  WifiConnectHelper.connectToProtectedSSIDOnce?.(
+    SSID,
+    password,
+    isWEP,
+    joinOnce
+  );

@@ -19,9 +19,57 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    @objc(connectToProtectedSSID:withPassphrase:WithIsWEP:withResolver:withRejecter:)
-    func connectToProtectedSSID(ssid: String, passphrase: String, isWEP: Bool, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-        
+    @objc(connectToSSID:withResolver:withRejecter:)
+    func connectToSSID(ssid: String, resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+        self.connectToProtectedSSID(ssid: ssid, passphrase: "", isWEP: false, resolve: resolve, reject: reject)
+    }
+    
+    /**
+     连接wifi
+     */
+    @objc(connectToProtectedSSID:withPassphrase:withIsWEP:withResolver:withRejecter:)
+    func connectToProtectedSSID(ssid: String, passphrase: String, isWEP: Bool, resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+        self.connectToProtectedSSIDOnce(ssid: ssid, passphrase: passphrase, isWEP: isWEP, joinOnce: false, resolve: resolve, reject: reject)
+    }
+    
+
+    @objc(connectToProtectedSSIDOnce:withPassphrase:withIsWEP:withJoinOnce:withResolver:withRejecter:)
+    func connectToProtectedSSIDOnce(ssid: String, passphrase: String, isWEP: Bool, joinOnce: Bool, resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
+        self.getWifiSSID { resultSSID in
+            // 已经连上了，直接返回
+            if resultSSID == ssid {
+                resolve(nil)
+                return
+            }
+            
+            if #available(iOS 11, *) {
+                var configuration = NEHotspotConfiguration()
+                // 检查是不是开放网络
+                if passphrase.count == 0 {
+                    configuration = NEHotspotConfiguration.init(ssid: ssid)
+                }else {
+                    configuration = NEHotspotConfiguration.init(ssid: ssid, passphrase: passphrase, isWEP: isWEP)
+                }
+                configuration.joinOnce = joinOnce
+                
+                NEHotspotConfigurationManager.shared.apply(configuration) { error in
+                    if error != nil {
+                        reject(self.parseError(error), error?.localizedDescription, error)
+                    }else {
+                        // 检查是否连接成功
+                        self.getWifiSSID { newSSID in
+                            if ssid == newSSID {
+                                resolve(nil)
+                            }else {
+                                reject(ConnectError.UnableToConnect.code, "Unable to connect to \(ssid)", nil)
+                            }
+                        }
+                    }
+                }
+            }else {
+                reject(ConnectError.UnavailableForOSVersion.code, "Not supported in iOS<11.0", nil)
+            }
+        }
     }
     
     /**
@@ -33,11 +81,11 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
             // 检查权限给了没
             if CLLocationManager.authorizationStatus() == CLAuthorizationStatus.denied {
                 print("RNWIFI:ERROR:Cannot detect SSID because LocationPermission is Denied ")
-                reject(ConnectErrorCode.LocationPermissionDenied.code, "Cannot detect SSID because LocationPermission is Denied", nil)
+                reject(ConnectError.LocationPermissionDenied.code, "Cannot detect SSID because LocationPermission is Denied", nil)
             }
             if CLLocationManager.authorizationStatus() == CLAuthorizationStatus.restricted {
                 print("RNWIFI:ERROR:Cannot detect SSID because LocationPermission is Restricted ")
-                reject(ConnectErrorCode.LocationPermissionRestricted.code, "Cannot detect SSID because LocationPermission is Restricted", nil)
+                reject(ConnectError.LocationPermissionRestricted.code, "Cannot detect SSID because LocationPermission is Restricted", nil)
             }
         }
         
@@ -58,11 +106,11 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
                                 return
                             }
                             print("RNWIFI:ERROR:Cannot detect SSID")
-                            reject(ConnectErrorCode.CouldNotDetectSSID.code, "Cannot detect SSID", nil)
+                            reject(ConnectError.CouldNotDetectSSID.code, "Cannot detect SSID", nil)
                         }
 
                     }else {
-                        reject(ConnectErrorCode.LocationPermissionDenied.code, "Permission not granted", nil)
+                        reject(ConnectError.LocationPermissionDenied.code, "Permission not granted", nil)
                     }
                 }
                 self.solved = true
@@ -74,7 +122,7 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
                     return
                 }
                 print("RNWIFI:ERROR:Cannot detect SSID")
-                reject(ConnectErrorCode.CouldNotDetectSSID.code, "Cannot detect SSID", nil)
+                reject(ConnectError.CouldNotDetectSSID.code, "Cannot detect SSID", nil)
             }
         }
     }
@@ -99,5 +147,49 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
             }
             cb(nil)
         }
+    }
+    
+    func parseError(_ error: Error?) -> String {
+        if #available(iOS 11, *) {
+
+            if error == nil {
+                return ConnectError.UnableToConnect.code
+            }
+
+            /*
+                     NEHotspotConfigurationErrorInvalid                         = 0,
+                     NEHotspotConfigurationErrorInvalidSSID                     = 1,
+                     NEHotspotConfigurationErrorInvalidWPAPassphrase            = 2,
+                     NEHotspotConfigurationErrorInvalidWEPPassphrase            = 3,
+                     NEHotspotConfigurationErrorInvalidEAPSettings              = 4,
+                     NEHotspotConfigurationErrorInvalidHS20Settings             = 5,
+                     NEHotspotConfigurationErrorInvalidHS20DomainName           = 6,
+                     NEHotspotConfigurationErrorUserDenied                      = 7,
+                     NEHotspotConfigurationErrorInternal                        = 8,
+                     NEHotspotConfigurationErrorPending                         = 9,
+                     NEHotspotConfigurationErrorSystemConfiguration             = 10,
+                     NEHotspotConfigurationErrorUnknown                         = 11,
+                     NEHotspotConfigurationErrorJoinOnceNotSupported            = 12,
+                     NEHotspotConfigurationErrorAlreadyAssociated               = 13,
+                     NEHotspotConfigurationErrorApplicationIsNotInForeground    = 14,
+                     NEHotspotConfigurationErrorInvalidSSIDPrefix               = 15
+                     */
+
+            switch (error as NSError?)?.code {
+            case NEHotspotConfigurationError.invalid.rawValue:
+                return ConnectError.Invalid.code
+            case NEHotspotConfigurationError.invalidSSID.rawValue:
+                return ConnectError.InvalidSSID.code
+            case NEHotspotConfigurationError.invalidSSIDPrefix.rawValue:
+                return ConnectError.InvalidSSIDPrefix.code
+            case NEHotspotConfigurationError.invalidWEPPassphrase.rawValue, NEHotspotConfigurationError.invalidWPAPassphrase.rawValue:
+                return ConnectError.InvalidPassphrase.code
+            case NEHotspotConfigurationError.userDenied.rawValue:
+                return ConnectError.UserDenied.code
+            default:
+                return ConnectError.UnableToConnect.code
+            }
+        }
+        return ConnectError.UnavailableForOSVersion.code
     }
 }

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-enum ConnectErrorCode {
+enum ConnectError {
     case UnavailableForOSVersion
     case Invalid
     case InvalidSSID
