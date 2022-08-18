@@ -19,20 +19,35 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    @objc(connectToSSID:withResolver:withRejecter:)
-    func connectToSSID(ssid: String, resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
-        self.connectToProtectedSSID(ssid: ssid, passphrase: "", isWEP: false, resolve: resolve, reject: reject)
+    /**
+     检查是定位否打开
+     */
+    @objc(checkIsGPSEnable:withRejecter:)
+    func checkIsGPSEnable(resolve:RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock){
+        resolve(CLLocationManager.locationServicesEnabled())
+    }
+    
+    /**
+     检查是wifi否打开
+     */
+    @objc(checkIsWifiEnable:withRejecter:)
+    func checkIsWifiEnable(resolve:RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) {
+        var hasWiFiNetwork: Bool = false
+        let interfaces: NSArray = CFBridgingRetain(CNCopySupportedInterfaces()) as! NSArray
+        for interface in interfaces {
+            // let networkInfo = (CFBridgingRetain(CNCopyCurrentNetworkInfo(((interface) as! CFString))) as! NSDictionary)
+            let networkInfo: [AnyHashable: Any]? = CFBridgingRetain(CNCopyCurrentNetworkInfo(((interface) as! CFString))) as? [AnyHashable : Any]
+            if (networkInfo != nil){ hasWiFiNetwork = true
+                break
+                
+            }
+        }
+        resolve(hasWiFiNetwork);
     }
     
     /**
      连接wifi
      */
-    @objc(connectToProtectedSSID:withPassphrase:withIsWEP:withResolver:withRejecter:)
-    func connectToProtectedSSID(ssid: String, passphrase: String, isWEP: Bool, resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
-        self.connectToProtectedSSIDOnce(ssid: ssid, passphrase: passphrase, isWEP: isWEP, joinOnce: false, resolve: resolve, reject: reject)
-    }
-    
-
     @objc(connectToProtectedSSIDOnce:withPassphrase:withIsWEP:withJoinOnce:withResolver:withRejecter:)
     func connectToProtectedSSIDOnce(ssid: String, passphrase: String, isWEP: Bool, joinOnce: Bool, resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) -> Void {
         self.getWifiSSID { resultSSID in

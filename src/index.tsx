@@ -17,6 +17,8 @@ const WifiConnectHelper = NativeModules.WifiConnectHelper
       }
     );
 
+const IS_IOS = Platform.OS === 'ios';
+
 export enum IS_REMOVE_WIFI_NETWORK_ERRORS {
   /**
    * Starting android 6, location permission needs to be granted for wifi scanning.
@@ -131,19 +133,20 @@ export enum CONNECT_ERRORS {
  * @param action
  * @returns
  */
-export const go = (action: string) => WifiConnectHelper?.go(action);
+export const open = (action: string) => WifiConnectHelper?.open(action);
 
 /**
  * 跳转到gps设置页面
  * @returns
  */
-export const goGPS = () => WifiConnectHelper.goGPS?.();
+export const openGPSSetting = () =>
+  open('android.settings.LOCATION_SOURCE_SETTINGS');
 
 /**
  * 跳转到wifi设置页面
  * @returns
  */
-export const goWifi = () => WifiConnectHelper.goWifi?.();
+export const openWifiSetting = () => open('android.settings.WIFI_SETTINGS');
 
 /**
  * 检查wifi是否开启
@@ -193,28 +196,6 @@ export const loadWifiList = (): Promise<WifiEntry[]> =>
 
 /**
  * 连接到指定wifi
- *
- * @param SSID Wifi 名称.
- * @param password 开放的wifi填null
- * @param isWep Used on iOS. If `true`, the network is WEP Wi-Fi; otherwise it is a WPA or WPA2 personal Wi-Fi network.
- */
-export const connectToProtectedSSID = (
-  SSID: string,
-  password: string | null,
-  isWEP: boolean = false
-): Promise<void> =>
-  WifiConnectHelper.connectToProtectedSSID?.(SSID, password, isWEP);
-
-/**
- * 连接到指定wifi
- *
- * @param SSID Wifi 名称.
- */
-export const connectToSSID = (SSID: string): Promise<void> =>
-  WifiConnectHelper.connectToSSID?.(SSID);
-
-/**
- * 连接到指定wifi
  * @param SSID
  * @param password
  * @param isWEP
@@ -233,3 +214,27 @@ export const connectToProtectedSSIDOnce = (
     isWEP,
     joinOnce
   );
+
+/**
+ * 连接到指定wifi
+ *
+ * @param SSID Wifi 名称.
+ * @param password 开放的wifi填null
+ * @param isWep Used on iOS. If `true`, the network is WEP Wi-Fi; otherwise it is a WPA or WPA2 personal Wi-Fi network.
+ */
+export const connectToProtectedSSID = (
+  SSID: string,
+  password: string,
+  isWEP: boolean = false
+): Promise<void> =>
+  IS_IOS
+    ? connectToProtectedSSIDOnce?.(SSID, password, isWEP, false)
+    : WifiConnectHelper.connectToProtectedSSID?.(SSID, password, isWEP);
+
+/**
+ * 连接到指定wifi
+ *
+ * @param SSID Wifi 名称.
+ */
+export const connectToSSID = (SSID: string): Promise<void> =>
+  connectToProtectedSSID?.(SSID, '', false);

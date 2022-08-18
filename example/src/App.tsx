@@ -10,16 +10,20 @@ import {
   SafeAreaView,
   Platform,
   KeyboardAvoidingView,
+  View,
+  Dimensions,
 } from 'react-native';
 import {
-  goGPS,
-  goWifi,
+  openGPSSetting,
+  openWifiSetting,
   getCurrentWifiSSID,
   checkIsWifiEnable,
   checkIsGPSEnable,
   loadWifiList,
   connectToProtectedSSID,
 } from 'react-native-wifi-connect-helper';
+
+const IS_ANDROID = Platform.OS === 'android';
 
 export default function App() {
   const [wifiName, setWifiName] = useState('');
@@ -31,41 +35,57 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView behavior="position">
-        <Button title="去gps页面" onPress={() => goGPS()} />
+        {IS_ANDROID && (
+          <View style={styles.block}>
+            <Button title="去gps页面" onPress={() => openGPSSetting()} />
+          </View>
+        )}
 
-        <Button title="去wifi页面" onPress={() => goWifi()} />
+        {IS_ANDROID && (
+          <View style={styles.block}>
+            <Button title="去wifi页面" onPress={() => openWifiSetting()} />
+          </View>
+        )}
 
-        <Button title="去设置页面" onPress={() => Linking.openSettings()} />
+        <View style={styles.block}>
+          <Button title="去设置页面" onPress={() => Linking.openSettings()} />
+        </View>
 
-        <Button
-          title="检查GPS是否开启"
-          onPress={async () => {
-            const bool = await checkIsGPSEnable();
-            setIsGPSEnabled(bool);
-          }}
-        />
-        <Text>gps开启：{isGPSEnabled?.toString()}</Text>
+        <View style={styles.block}>
+          <Button
+            title="检查GPS是否开启"
+            onPress={async () => {
+              const bool = await checkIsGPSEnable();
+              setIsGPSEnabled(bool);
+            }}
+          />
+          <Text>gps开启：{isGPSEnabled?.toString()}</Text>
+        </View>
 
-        <Button
-          title="检查wifi是否开启"
-          onPress={async () => {
-            const bool = await checkIsWifiEnable();
-            setIsWfiEnabled(bool);
-          }}
-        />
-        <Text>wif开启：{isWfiEnabled?.toString()}</Text>
+        <View style={styles.block}>
+          <Button
+            title="检查wifi是否开启"
+            onPress={async () => {
+              const bool = await checkIsWifiEnable();
+              setIsWfiEnabled(bool);
+            }}
+          />
+          <Text>wif开启：{isWfiEnabled?.toString()}</Text>
+        </View>
 
-        <Button
-          title="获取当前连接的wifi"
-          onPress={async () => {
-            const ssid = await getCurrentWifiSSID();
-            setWifiName(ssid);
-          }}
-        />
-        <Text>wifi名称：{wifiName}</Text>
+        <View style={styles.block}>
+          <Button
+            title="获取当前连接的wifi"
+            onPress={async () => {
+              const ssid = await getCurrentWifiSSID();
+              setWifiName(ssid);
+            }}
+          />
+          <Text>wifi名称：{wifiName}</Text>
+        </View>
 
-        {Platform.OS === 'android' && (
-          <>
+        {IS_ANDROID && (
+          <View style={styles.block}>
             <Button
               title="获取wifi列表"
               onPress={async () => {
@@ -80,30 +100,32 @@ export default function App() {
                 </Text>
               ))}
             </ScrollView>
-          </>
+          </View>
         )}
 
-        <Text>连接wifi</Text>
-        <TextInput
-          value={wifiName}
-          placeholder="请输入wifi名称"
-          onChangeText={(text) => setWifiName(text)}
-        />
-        <TextInput
-          placeholder="请输入wifi密码"
-          onChangeText={(text) => setPassword(text)}
-        />
-        <Button
-          onPress={async () => {
-            try {
-              const res = await connectToProtectedSSID(wifiName, password);
-              console.log(res);
-            } catch (err) {
-              console.log('err', err);
-            }
-          }}
-          title="开始连接"
-        />
+        <View style={styles.block}>
+          <Text>连接wifi</Text>
+          <TextInput
+            value={wifiName}
+            placeholder="请输入wifi名称"
+            onChangeText={(text) => setWifiName(text)}
+          />
+          <TextInput
+            placeholder="请输入wifi密码"
+            onChangeText={(text) => setPassword(text)}
+          />
+          <Button
+            onPress={async () => {
+              try {
+                const res = await connectToProtectedSSID(wifiName, password);
+                console.log(res);
+              } catch (err) {
+                console.log('err', err);
+              }
+            }}
+            title="开始连接"
+          />
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -113,11 +135,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
+  block: {
+    width: Dimensions.get('window').width,
+    padding: 10,
+    borderBottomColor: '#ddd',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

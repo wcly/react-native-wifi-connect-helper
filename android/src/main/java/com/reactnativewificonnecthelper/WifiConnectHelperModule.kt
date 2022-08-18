@@ -16,7 +16,6 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
-import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.*
@@ -50,26 +49,10 @@ class WifiConnectHelperModule(reactContext: ReactApplicationContext) :
   }
 
   /**
-   * 跳转到gps设置页面
-   */
-  @ReactMethod
-  fun goGPS() {
-    go(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-  }
-
-  /**
-   * 跳转到wifi设置页面
-   */
-  @ReactMethod
-  fun goWifi() {
-    go(Settings.ACTION_WIFI_SETTINGS)
-  }
-
-  /**
    * 跳转到一个activity
    */
   @ReactMethod
-  fun go(action: String) {
+  fun open(action: String) {
     val intent = Intent(action)
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
     reactApplicationContext.applicationContext.startActivity(intent)
