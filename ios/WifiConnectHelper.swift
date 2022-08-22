@@ -11,7 +11,7 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
     
     override init() {
         super.init()
-        print("RNWIFI:Init")
+        print("WifiConnectHelper:Init")
         solved = true
         if #available(iOS 13, *) {
             locationManager = CLLocationManager()
@@ -95,11 +95,11 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
         if #available(iOS 13, *) {
             // 检查权限给了没
             if CLLocationManager.authorizationStatus() == CLAuthorizationStatus.denied {
-                print("RNWIFI:ERROR:Cannot detect SSID because LocationPermission is Denied ")
+                print("WifiConnectHelper:ERROR:Cannot detect SSID because LocationPermission is Denied ")
                 reject(ConnectError.LocationPermissionDenied.code, "Cannot detect SSID because LocationPermission is Denied", nil)
             }
             if CLLocationManager.authorizationStatus() == CLAuthorizationStatus.restricted {
-                print("RNWIFI:ERROR:Cannot detect SSID because LocationPermission is Restricted ")
+                print("WifiConnectHelper:ERROR:Cannot detect SSID because LocationPermission is Restricted ")
                 reject(ConnectError.LocationPermissionRestricted.code, "Cannot detect SSID because LocationPermission is Restricted", nil)
             }
         }
@@ -111,7 +111,7 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
             // https://forums.developer.apple.com/thread/117371#364495
             locationManager?.requestWhenInUseAuthorization()
             self.solved = false;
-            NotificationCenter.default.addObserver(forName: NSNotification.Name("RNWIFI:authorizationStatus"), object: nil, queue: nil) { Notification in
+            NotificationCenter.default.addObserver(forName: NSNotification.Name("WifiConnectHelper:authorizationStatus"), object: nil, queue: nil) { Notification in
                 
                 if !self.solved {
                     if hasLocationPermission {
@@ -120,7 +120,7 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
                                 resolve(SSID)
                                 return
                             }
-                            print("RNWIFI:ERROR:Cannot detect SSID")
+                            print("WifiConnectHelper:ERROR:Cannot detect SSID")
                             reject(ConnectError.CouldNotDetectSSID.code, "Cannot detect SSID", nil)
                         }
 
@@ -136,7 +136,7 @@ class WifiConnectHelper: NSObject, CLLocationManagerDelegate {
                     resolve(SSID)
                     return
                 }
-                print("RNWIFI:ERROR:Cannot detect SSID")
+                print("WifiConnectHelper:ERROR:Cannot detect SSID")
                 reject(ConnectError.CouldNotDetectSSID.code, "Cannot detect SSID", nil)
             }
         }

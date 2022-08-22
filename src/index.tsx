@@ -229,7 +229,7 @@ export const connectToProtectedSSID = (
 ): Promise<void> =>
   IS_IOS
     ? connectToProtectedSSIDOnce?.(SSID, password, isWEP, false)
-    : WifiConnectHelper.connectToProtectedSSID?.(SSID, password, isWEP);
+    : WifiConnectHelper.connectToProtectedSSID?.(SSID, password);
 
 /**
  * 连接到指定wifi

@@ -35,97 +35,99 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView behavior="position">
-        {IS_ANDROID && (
+        <ScrollView>
+          {IS_ANDROID && (
+            <View style={styles.block}>
+              <Button title="去gps页面" onPress={() => openGPSSetting()} />
+            </View>
+          )}
+
+          {IS_ANDROID && (
+            <View style={styles.block}>
+              <Button title="去wifi页面" onPress={() => openWifiSetting()} />
+            </View>
+          )}
+
           <View style={styles.block}>
-            <Button title="去gps页面" onPress={() => openGPSSetting()} />
+            <Button title="去设置页面" onPress={() => Linking.openSettings()} />
           </View>
-        )}
 
-        {IS_ANDROID && (
-          <View style={styles.block}>
-            <Button title="去wifi页面" onPress={() => openWifiSetting()} />
-          </View>
-        )}
-
-        <View style={styles.block}>
-          <Button title="去设置页面" onPress={() => Linking.openSettings()} />
-        </View>
-
-        <View style={styles.block}>
-          <Button
-            title="检查GPS是否开启"
-            onPress={async () => {
-              const bool = await checkIsGPSEnable();
-              setIsGPSEnabled(bool);
-            }}
-          />
-          <Text>gps开启：{isGPSEnabled?.toString()}</Text>
-        </View>
-
-        <View style={styles.block}>
-          <Button
-            title="检查wifi是否开启"
-            onPress={async () => {
-              const bool = await checkIsWifiEnable();
-              setIsWfiEnabled(bool);
-            }}
-          />
-          <Text>wif开启：{isWfiEnabled?.toString()}</Text>
-        </View>
-
-        <View style={styles.block}>
-          <Button
-            title="获取当前连接的wifi"
-            onPress={async () => {
-              const ssid = await getCurrentWifiSSID();
-              setWifiName(ssid);
-            }}
-          />
-          <Text>wifi名称：{wifiName}</Text>
-        </View>
-
-        {IS_ANDROID && (
           <View style={styles.block}>
             <Button
-              title="获取wifi列表"
+              title="检查GPS是否开启"
               onPress={async () => {
-                const result = await loadWifiList();
-                setWifiList(result);
+                const bool = await checkIsGPSEnable();
+                setIsGPSEnabled(bool);
               }}
             />
-            <ScrollView>
-              {wifiList?.map((item) => (
-                <Text key={item.BSSID}>
-                  {item.SSID} / {item.BSSID}
-                </Text>
-              ))}
-            </ScrollView>
+            <Text>gps开启：{isGPSEnabled?.toString()}</Text>
           </View>
-        )}
 
-        <View style={styles.block}>
-          <Text>连接wifi</Text>
-          <TextInput
-            value={wifiName}
-            placeholder="请输入wifi名称"
-            onChangeText={(text) => setWifiName(text)}
-          />
-          <TextInput
-            placeholder="请输入wifi密码"
-            onChangeText={(text) => setPassword(text)}
-          />
-          <Button
-            onPress={async () => {
-              try {
-                const res = await connectToProtectedSSID(wifiName, password);
-                console.log(res);
-              } catch (err) {
-                console.log('err', err);
-              }
-            }}
-            title="开始连接"
-          />
-        </View>
+          <View style={styles.block}>
+            <Button
+              title="检查wifi是否开启"
+              onPress={async () => {
+                const bool = await checkIsWifiEnable();
+                setIsWfiEnabled(bool);
+              }}
+            />
+            <Text>wif开启：{isWfiEnabled?.toString()}</Text>
+          </View>
+
+          <View style={styles.block}>
+            <Button
+              title="获取当前连接的wifi"
+              onPress={async () => {
+                const ssid = await getCurrentWifiSSID();
+                setWifiName(ssid);
+              }}
+            />
+            <Text>wifi名称：{wifiName}</Text>
+          </View>
+
+          <View style={styles.block}>
+            <Text>连接wifi</Text>
+            <TextInput
+              value={wifiName}
+              placeholder="请输入wifi名称"
+              onChangeText={(text) => setWifiName(text)}
+            />
+            <TextInput
+              placeholder="请输入wifi密码"
+              onChangeText={(text) => setPassword(text)}
+            />
+            <Button
+              onPress={async () => {
+                try {
+                  const res = await connectToProtectedSSID(wifiName, password);
+                  console.log(res);
+                } catch (err) {
+                  console.log('err', err);
+                }
+              }}
+              title="开始连接"
+            />
+          </View>
+
+          {IS_ANDROID && (
+            <View style={styles.block}>
+              <Button
+                title="获取wifi列表"
+                onPress={async () => {
+                  const result = await loadWifiList();
+                  setWifiList(result);
+                }}
+              />
+              <View>
+                {wifiList?.map((item) => (
+                  <Text key={item.BSSID}>
+                    {item.SSID} / {item.BSSID}
+                  </Text>
+                ))}
+              </View>
+            </View>
+          )}
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
