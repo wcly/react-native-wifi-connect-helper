@@ -36,8 +36,8 @@
     "ios",
     "android"
   ],
-  "repository": "https://www.utcook.com",
-  "author": "魏小林 <weixiaolin@zhut.cn> (https://github.com/wcly)",
+  "repository": "https://www.npmjs.com/package/@wlicox/react-native-wifi-connect-helper",
+  "author": "wcly <weixiaolin@zhut.cn> (https://github.com/wcly)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/wcly/react-native-wifi-connect-helper/issues"
