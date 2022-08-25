@@ -206,7 +206,7 @@ export const connectToProtectedSSIDOnce = (
   SSID: string,
   password: string,
   isWEP: boolean,
-  joinOnce: boolean
+  joinOnce: boolean = false
 ): Promise<void> =>
   WifiConnectHelper.connectToProtectedSSIDOnce?.(
     SSID,
