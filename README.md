@@ -1,6 +1,6 @@
 # react-native-wifi-connect-helper
 
-Wifi配网助手，参考了**[react-native-wifi-reborn](https://github.com/JuanSeBestia/react-native-wifi-reborn)**的代码
+Wifi配网助手，参考了[react-native-wifi-reborn](https://github.com/JuanSeBestia/react-native-wifi-reborn)的代码
 
 ## 安装
 
@@ -50,7 +50,7 @@ react-native link react-native-wifi-connect-helper
 ##### iOS
 
 1. 打开XCode, 在项目导航器中, 右键 `Libraries` ➜ `Add Files to [your project's name]`
-2. 打开 `node_modules` ➜ `react-native-wifi-connect-helper` and add `WifiConnectHelper.xcodeproj`
+2. 打开 `node_modules` ➜ `react-native-wifi-connect-helper` 然后添加 `WifiConnectHelper.xcodeproj`
 3. 打开XCode, 在项目导航器中, 选择你的项目. 添加 `libWifiConnectHelper.a` 到你项目的 `Build Phases` 中➜ `Link Binary With Libraries`
 4. 运行你的项目 (`Cmd+R`)
 
