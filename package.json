@@ -1,6 +1,6 @@
 {
   "name": "react-native-wifi-connect-helper",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "wifi配网助手",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
