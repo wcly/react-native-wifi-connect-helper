@@ -58,7 +58,7 @@ react-native link react-native-wifi-connect-helper
 
 1. 打开 `android/app/src/main/java/[...]/MainActivity.java`
 
-- 添加 `import com.reactlibrary.reactnativewificonnecthelper.WifiConnectHelperPackage;` 到文件顶部
+- 添加 `import com.reactnativewificonnecthelper.WifiConnectHelperPackage;` 到文件顶部
 - 在`getPackages()` 方法中添加 `new WifiConnectHelperPackage()` 到列表中
 
 2. 添加下列代码到 `android/settings.gradle` ：
